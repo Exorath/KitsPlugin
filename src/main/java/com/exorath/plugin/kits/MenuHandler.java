@@ -31,10 +31,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by toonsev on 5/23/2017.
@@ -88,7 +85,7 @@ public class MenuHandler implements Listener {
         return menuItems.toArray(new MenuItem[menuItems.size()]);
     }
 
-    private Set<String> recentlyPurchased;
+    private Set<String> recentlyPurchased = new HashSet<>();
 
     private Success purchaseKit(Player player, String kitId, Kit kit) {
         String playerId = player.getUniqueId().toString();
