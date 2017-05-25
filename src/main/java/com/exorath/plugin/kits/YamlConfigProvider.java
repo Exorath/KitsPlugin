@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.exorath.plugin.kit;
+package com.exorath.plugin.kits;
 
 import org.bukkit.configuration.file.FileConfiguration;
 

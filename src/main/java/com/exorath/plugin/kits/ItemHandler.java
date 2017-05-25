@@ -14,11 +14,10 @@
  *    limitations under the License.
  */
 
-package com.exorath.plugin.kit;
+package com.exorath.plugin.kits;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

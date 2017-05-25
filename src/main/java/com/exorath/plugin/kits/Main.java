@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.exorath.plugin.kit;
+package com.exorath.plugin.kits;
 
 import com.exorath.service.kit.api.KitServiceAPI;
 import org.bukkit.Bukkit;

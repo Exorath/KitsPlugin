@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.exorath.plugin.kit;
+package com.exorath.plugin.kits;
 
 import com.exorath.commons.ItemStackSerialize;
 import com.exorath.exomenus.InventoryMenu;
@@ -74,7 +74,7 @@ public class MenuHandler implements Listener {
                 lore.add(ChatColor.GOLD + ChatColor.BOLD.toString() + "Costs: ");
                 kitEntry.getValue().getCosts().forEach((currencyKey, currencyVal) -> lore.add(ChatColor.WHITE + currencyKey + ": " + ChatColor.GOLD + currencyVal));
             } else
-                lore.add(ChatColor.GREEN + "You own this kit.");
+                lore.add(ChatColor.GREEN + "You own this kits.");
             menuItems.add(new MenuItem(displayName, itemStack, lore.toArray(new String[lore.size()])));
         }
         return menuItems.toArray(new MenuItem[menuItems.size()]);
