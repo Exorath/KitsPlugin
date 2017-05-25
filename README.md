@@ -4,12 +4,3 @@ Simply put this plugin in a server lobby, update the config and get a kit item w
 ##config.yaml
 itemSlot: 2
 kitPackageId: CW
-
-##config.json
-```json
-{
-"kitPackage": {
-  "seeKitServiceForKitPackageSpec": true
-}
-}
-```
