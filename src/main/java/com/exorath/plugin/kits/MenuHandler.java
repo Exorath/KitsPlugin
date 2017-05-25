@@ -83,6 +83,7 @@ public class MenuHandler implements Listener {
                 else
                     purchaseKit(player, kitEntry.getKey(), kitEntry.getValue());
             });
+            menuItems.add(menuItem);
         }
         return menuItems.toArray(new MenuItem[menuItems.size()]);
     }
