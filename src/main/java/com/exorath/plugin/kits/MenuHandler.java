@@ -21,9 +21,7 @@ import com.exorath.exomenus.InventoryMenu;
 import com.exorath.exomenus.MenuItem;
 import com.exorath.exomenus.Size;
 import com.exorath.service.kit.api.KitServiceAPI;
-import com.exorath.service.kit.res.GetPlayerKitsResponse;
-import com.exorath.service.kit.res.Kit;
-import com.exorath.service.kit.res.KitPackage;
+import com.exorath.service.kit.res.*;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -57,6 +55,7 @@ public class MenuHandler implements Listener {
         }
         Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
             InventoryMenu menu = new InventoryMenu("Kits", Size.getSize(kitPackage.getKits().size()), getMenuItems(player), null);
+
             Bukkit.getScheduler().runTask(Main.getInstance(), () -> menu.open(player));
         });
     }
@@ -75,7 +74,17 @@ public class MenuHandler implements Listener {
                 kitEntry.getValue().getCosts().forEach((currencyKey, currencyVal) -> lore.add(ChatColor.WHITE + currencyKey + ": " + ChatColor.GOLD + currencyVal));
             } else
                 lore.add(ChatColor.GREEN + "You own this kits.");
-            menuItems.add(new MenuItem(displayName, itemStack, lore.toArray(new String[lore.size()])));
+            MenuItem menuItem = new MenuItem(displayName, itemStack, lore.toArray(new String[lore.size()]));
+            menuItem.getClickObservable().subscribe(event -> {
+                if (hasKit)
+                    event.getWhoClicked().sendMessage(ChatColor.GRAY + "Join a game to select the kit");
+                Success success = kitServiceAPI.purchaseKit(new PurchaseKitReq(kitPackageId, player.getUniqueId().toString(), kitEntry.getKey()));
+                player.closeInventory();
+                if (success.isSuccess())
+                    player.sendMessage(ChatColor.GREEN + "Kit " + kitEntry.getValue().getName() + " bought.");
+                else
+                    player.sendMessage(ChatColor.RED + success.getError() + ChatColor.GRAY + " (" + success.getCode() + ")");
+            });
         }
         return menuItems.toArray(new MenuItem[menuItems.size()]);
     }
