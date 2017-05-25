@@ -51,7 +51,7 @@ public class MenuHandler implements Listener {
     }
 
     public void openInventory(Player player) {
-        if (kitPackage.getKits().isEmpty()) {
+        if (kitPackage.getKits() == null || kitPackage.getKits().isEmpty()) {
             player.sendMessage(ChatColor.RED + "Error: No kits yet, come back in a couple of days.");
             return;
         }
