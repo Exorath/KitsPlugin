@@ -29,10 +29,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by toonsev on 5/23/2017.
@@ -78,15 +80,31 @@ public class MenuHandler implements Listener {
             menuItem.getClickObservable().subscribe(event -> {
                 if (hasKit)
                     event.getWhoClicked().sendMessage(ChatColor.GRAY + "Join a game to select the kit");
-                Success success = kitServiceAPI.purchaseKit(new PurchaseKitReq(kitPackageId, player.getUniqueId().toString(), kitEntry.getKey()));
-                player.closeInventory();
-                if (success.isSuccess())
-                    player.sendMessage(ChatColor.GREEN + "Kit " + kitEntry.getValue().getName() + " bought.");
                 else
-                    player.sendMessage(ChatColor.RED + success.getError() + ChatColor.GRAY + " (" + success.getCode() + ")");
+                    purchaseKit(player, kitEntry.getKey(), kitEntry.getValue());
             });
         }
         return menuItems.toArray(new MenuItem[menuItems.size()]);
+    }
+
+    private Set<String> recentlyPurchased;
+
+    private Success purchaseKit(Player player, String kitId, Kit kit) {
+        String playerId = player.getUniqueId().toString();
+        if (recentlyPurchased.contains(playerId))
+            return new Success("You just made a purchase, please wait...", -1);
+        recentlyPurchased.add(playerId);
+        player.closeInventory();
+        BukkitTask task = Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> recentlyPurchased.remove(playerId), 200l);
+        Success success = kitServiceAPI.purchaseKit(new PurchaseKitReq(kitPackageId, player.getUniqueId().toString(), kitId));
+        task.cancel();
+        if (recentlyPurchased.contains(playerId))
+            Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> recentlyPurchased.remove(playerId), 20l);
+        if (success.isSuccess())
+            player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + " bought.");
+        else
+            player.sendMessage(ChatColor.RED + success.getError() + ChatColor.GRAY + " (" + success.getCode() + ")");
+        return success;
     }
 
     @EventHandler
