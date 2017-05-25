@@ -31,12 +31,19 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         Main.instance = this;
         this.configProvider = new YamlConfigProvider(getConfig());
-        this.menuHandler = new MenuHandler(new KitServiceAPI(getKitServiceAddress()));
+        this.menuHandler = new MenuHandler(new KitServiceAPI(getKitServiceAddress()), getKitPackageId());
         Bukkit.getPluginManager().registerEvents(menuHandler, this);
         Bukkit.getPluginManager().registerEvents(new ItemHandler(menuHandler, configProvider), this);
     }
 
-    public String getKitServiceAddress() {
+
+    private String getKitPackageId(){
+        String kitPackageId = configProvider.getKitPackageId();
+        if (kitPackageId == null)
+            Main.terminate("No kitPackageId config.yaml field found.");
+        return kitPackageId;
+    }
+    private String getKitServiceAddress() {
         String address = System.getenv("KIT_SERVICE_ADDRESS");
         if (address == null)
             Main.terminate("No KIT_SERVICE_ADDRESS env found.");

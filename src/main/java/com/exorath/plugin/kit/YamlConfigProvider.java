@@ -33,4 +33,11 @@ public class YamlConfigProvider {
             return fileConfiguration.getInt("itemSlot");
         return null;
     }
+
+
+    public String getKitPackageId() {
+        if (fileConfiguration.contains("kitPackageId"))
+            return fileConfiguration.getString("kitPackageId");
+        return null;
+    }
 }
