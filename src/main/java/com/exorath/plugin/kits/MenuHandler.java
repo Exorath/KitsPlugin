@@ -30,7 +30,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
@@ -113,7 +112,7 @@ public class MenuHandler implements Listener {
         AntiSpam.setSpamming(Main.getInstance(), player.getUniqueId());
         player.closeInventory();
         Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-            Success success = kitServiceAPI.purchaseKit(new PurchaseKitReq(kitPackageId, player.getUniqueId().toString(), kitId));
+            Success success = kitServiceAPI.purchaseKit(new PurchaseKitReq(kitPackageId, playerId, kitId));
             if (success.isSuccess())
                 Bukkit.getScheduler().runTask(Main.getInstance(), () -> player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + " bought."));
             else
