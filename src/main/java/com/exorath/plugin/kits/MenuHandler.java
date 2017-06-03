@@ -99,7 +99,7 @@ public class MenuHandler implements Listener {
                 Bukkit.getScheduler().runTask(Main.getInstance(), () -> player.sendMessage(ChatColor.GREEN + "Kit selection saved."));
 
             else
-                Bukkit.getScheduler().runTask(Main.getInstance(), () -> player.sendMessage(ChatColor.RED + "Error while selecting kit: " + success.getError());
+                Bukkit.getScheduler().runTask(Main.getInstance(), () -> player.sendMessage(ChatColor.RED + "Error while selecting kit: " + success.getError()));
         });
     }
 
@@ -115,9 +115,9 @@ public class MenuHandler implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
             Success success = kitServiceAPI.purchaseKit(new PurchaseKitReq(kitPackageId, player.getUniqueId().toString(), kitId));
             if (success.isSuccess())
-                Bukkit.getScheduler().runTask(Main.getInstance(), () -> player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + " bought.");
+                Bukkit.getScheduler().runTask(Main.getInstance(), () -> player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + " bought."));
             else
-                Bukkit.getScheduler().runTask(Main.getInstance(), () -> player.sendMessage(ChatColor.RED + "Error: " + success.getError() + ChatColor.GRAY + " (Error code: " + success.getCode() + ")");
+                Bukkit.getScheduler().runTask(Main.getInstance(), () -> player.sendMessage(ChatColor.RED + "Error: " + success.getError() + ChatColor.GRAY + " (Error code: " + success.getCode() + ")"));
         });
     }
 
