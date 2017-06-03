@@ -16,6 +16,7 @@
 
 package com.exorath.plugin.kits;
 
+import com.exorath.commons.AntiSpam;
 import com.exorath.commons.ItemStackSerialize;
 import com.exorath.exomenus.InventoryMenu;
 import com.exorath.exomenus.MenuItem;
@@ -75,9 +76,9 @@ public class MenuHandler implements Listener {
                 lore.add(ChatColor.GREEN + "You own this kits.");
             MenuItem menuItem = new MenuItem(displayName, itemStack, lore.toArray(new String[lore.size()]));
             menuItem.getClickObservable().subscribe(event -> {
-                if (hasKit)
-                    event.getWhoClicked().sendMessage(ChatColor.GRAY + "Join a game to select the kit");
-                else
+                if (hasKit) {
+                    select(player, kitEntry.getKey());
+                } else
                     purchaseKit(player, kitEntry.getKey(), kitEntry.getValue());
             });
             menuItems.add(menuItem);
@@ -85,24 +86,39 @@ public class MenuHandler implements Listener {
         return menuItems.toArray(new MenuItem[menuItems.size()]);
     }
 
-    private Set<String> recentlyPurchased = new HashSet<>();
+    private void select(Player player, String kitId) {
+        if (AntiSpam.isSpamming(player.getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "Don't spam");
+            return;
+        }
+        AntiSpam.setSpamming(Main.getInstance(), player.getUniqueId());
+        String uuid = player.getUniqueId().toString();
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+            Success success = kitServiceAPI.setCurrentKit(kitPackageId, uuid, kitId);
+            if(success.isSuccess())
+                Bukkit.getScheduler().runTask(Main.getInstance(), () -> player.sendMessage(ChatColor.GREEN + "Kit selection saved."));
 
-    private Success purchaseKit(Player player, String kitId, Kit kit) {
+            else
+                Bukkit.getScheduler().runTask(Main.getInstance(), () -> player.sendMessage(ChatColor.RED + "Error while selecting kit: " + success.getError());
+        });
+    }
+
+
+    private void purchaseKit(Player player, String kitId, Kit kit) {
         String playerId = player.getUniqueId().toString();
-        if (recentlyPurchased.contains(playerId))
-            return new Success("You just made a purchase, please wait...", -1);
-        recentlyPurchased.add(playerId);
+        if (AntiSpam.isSpamming(player.getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "Don't spam");
+            return;
+        }
+        AntiSpam.setSpamming(Main.getInstance(), player.getUniqueId());
         player.closeInventory();
-        BukkitTask task = Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> recentlyPurchased.remove(playerId), 200l);
-        Success success = kitServiceAPI.purchaseKit(new PurchaseKitReq(kitPackageId, player.getUniqueId().toString(), kitId));
-        task.cancel();
-        if (recentlyPurchased.contains(playerId))
-            Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> recentlyPurchased.remove(playerId), 20l);
-        if (success.isSuccess())
-            player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + " bought.");
-        else
-            player.sendMessage(ChatColor.RED + success.getError() + ChatColor.GRAY + " (" + success.getCode() + ")");
-        return success;
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+            Success success = kitServiceAPI.purchaseKit(new PurchaseKitReq(kitPackageId, player.getUniqueId().toString(), kitId));
+            if (success.isSuccess())
+                Bukkit.getScheduler().runTask(Main.getInstance(), () -> player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + " bought.");
+            else
+                Bukkit.getScheduler().runTask(Main.getInstance(), () -> player.sendMessage(ChatColor.RED + "Error: " + success.getError() + ChatColor.GRAY + " (Error code: " + success.getCode() + ")");
+        });
     }
 
     @EventHandler
